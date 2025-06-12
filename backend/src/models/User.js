@@ -51,14 +51,9 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 ); // created , updated
 
-
-const User = mongoose.model("User",UserSchema);
-// pre hook
-// user password : 12345 ==> w%^&#(#&&(dlfj))  for safety we'll not store password as it is.
-
-UserSchema.pre("save",async function(name) {
+UserSchema.pre("save",async function(next) {
     if(!this.isModified("password"))
-        return next();
+        return next();  
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password,salt);
@@ -66,6 +61,15 @@ UserSchema.pre("save",async function(name) {
     } catch (error) {
         next(error);
     }
-})
+});
+
+UserSchema.methods.matchPassword = async function (enteredPassword){
+  const isPasswordCorrect = await bcrypt.compare(enteredPassword,this.password);
+  return isPasswordCorrect;
+}
+
+const User = mongoose.model("User",UserSchema);
+// pre hook
+// user password : 12345 ==> w%^&#(#&&(dlfj))  for safety we'll not store password as it is.
 
 export default User;
