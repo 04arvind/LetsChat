@@ -1,4 +1,3 @@
-import { messageSetPagination } from "stream-chat/dist/types/utils.js";
 import User from "../models/User.js";
 import FriendRequest from "../models/FriendRequest.js";
 
