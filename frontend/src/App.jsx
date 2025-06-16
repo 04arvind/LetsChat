@@ -8,13 +8,28 @@ import CallPage from "./pages/CallPage.jsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import OnboardingPage from "./pages/OnboardingPage.jsx";
 
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {axiosInstance} from "./lib/axios.js";
 
 const App = () => {
-  return <div className="h-screen" data-theme="night">
-    <button onClick={()=> toast.success("Hello world !")}>Create a toast</button>
-    <Routes>
 
+  // react query tanstack query
+  const {data, isLoading, error} = useQuery({
+    queryKey:["todos"],
+    queryFn: async ()=>{
+      const res = await axiosInstance.get("http://http://localhost:5173/api/auth/me");
+      return res.data;
+    },
+  });
+
+  console.log(data);
+
+  return (
+  <div className="h-screen" data-theme="night">
+    <Routes>
       <Route path="/" element={<HomePage/>} />
       <Route path="/signup" element={<SignUpPage/>} />
       <Route path="/login" element={<LoginPage/>} />
@@ -26,6 +41,7 @@ const App = () => {
     </Routes>
 
     <Toaster/>
-  </div>;
+  </div>
+  );
 };
 export default App;
