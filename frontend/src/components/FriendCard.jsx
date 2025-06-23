@@ -1,4 +1,4 @@
-import { LANGUAGE_TO_FLAG } from "../constants";
+import { LANGUAGE_TO_FLAG } from "../constants/index";
 import { Link } from "react-router";
 
 const FriendCard = (friend) => {
@@ -38,7 +38,7 @@ export function getLanguageFlag(language) {
     if(!language) return null;
 
     const langLower = language.toLowerCase();
-    const countryCode = LANGUAGE_TO_FLAG(langLower);
+    const countryCode = LANGUAGE_TO_FLAG[langLower];
 
     if(countryCode) {
         return (

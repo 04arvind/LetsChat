@@ -10,20 +10,31 @@ import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
+import { capitalize } from "../lib/utils.js";
 
 
 const HomePage = () => {
   const queryClient = useQueryClient();
-  const { outgoingRequestsIds, setOutgoingRequestsIds } = useState(new Set());
+  const [outgoingRequestsIds, setOutgoingRequestsIds] = useState(new Set());
 
   const { data: friends = [], isLoading: loadingFriends } = useQuery({
     queryKey: ["friends"],
     queryFn: getUserFriends,
   });
-  const { data: recommendedUsers=[], isLoading: loadingUsers } = useQuery({
-    queryKey: ["users"],
-    queryFn: getRecommendedUsers,
-  });
+
+        
+  //  //   This is causing error : 
+  // const { data: recommendedUsers=[], isLoading: loadingUsers } = useQuery({
+  //   queryKey: ["users"],
+  //   queryFn: getRecommendedUsers
+  // });
+       //   //    The above code is causing error because the data returned from getRecommendedUsers is not in the expected format.
+  const { data, isLoading: loadingUsers } = useQuery({
+  queryKey: ["users"],
+  queryFn: getRecommendedUsers,
+});
+const recommendedUsers = data?.recommendedUsers || [];
+
 
   const { data: outgoingFriendReqs } = useQuery({
     queryKey: ["outgoingFriendReqs"],
@@ -39,11 +50,11 @@ const HomePage = () => {
     const outgoingIds = new Set();
     if (outgoingFriendReqs && outgoingFriendReqs.length > 0) {
       outgoingFriendReqs.forEach((req) => {
-        outgoingIds.add(req.id)
-      })
-      setOutgoingRequestsIds(outgoingIds)
+        outgoingIds.add(req.recipient._id);
+      });
+      setOutgoingRequestsIds(outgoingIds);
     }
-  }, [outgoingFriendReqs])
+  }, [outgoingFriendReqs]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -67,7 +78,7 @@ const HomePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {friends.map((friend) => (
-              <FriendCard key={friend._id} friend={frined} />
+              <FriendCard key={friend._id} friend={friend} />
             ))}
           </div>
         )}
@@ -101,6 +112,7 @@ const HomePage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              
               { recommendedUsers.map((user) => {
                 const hasRequestBeenSent = outgoingRequestsIds.has(user._id);
                 return (
@@ -172,5 +184,3 @@ const HomePage = () => {
   );
 };
 export default HomePage;
-
-const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
