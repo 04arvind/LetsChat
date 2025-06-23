@@ -7,11 +7,15 @@ import {
   sendFriendRequest,
 } from "../lib/api";
 import { Link } from "react-router";
-import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  MapPinIcon,
+  UserPlusIcon,
+  UsersIcon,
+} from "lucide-react";
 import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
 import { capitalize } from "../lib/utils.js";
-
 
 const HomePage = () => {
   const queryClient = useQueryClient();
@@ -22,19 +26,17 @@ const HomePage = () => {
     queryFn: getUserFriends,
   });
 
-        
-  //  //   This is causing error : 
+  //  //   This is causing error :
   // const { data: recommendedUsers=[], isLoading: loadingUsers } = useQuery({
   //   queryKey: ["users"],
   //   queryFn: getRecommendedUsers
   // });
-       //   //    The above code is causing error because the data returned from getRecommendedUsers is not in the expected format.
+  //   //    The above code is causing error because the data returned from getRecommendedUsers is not in the expected format.
   const { data, isLoading: loadingUsers } = useQuery({
-  queryKey: ["users"],
-  queryFn: getRecommendedUsers,
-});
-const recommendedUsers = data?.recommendedUsers || [];
-
+    queryKey: ["users"],
+    queryFn: getRecommendedUsers,
+  });
+  const recommendedUsers = data?.recommendedUsers || [];
 
   const { data: outgoingFriendReqs } = useQuery({
     queryKey: ["outgoingFriendReqs"],
@@ -43,7 +45,8 @@ const recommendedUsers = data?.recommendedUsers || [];
 
   const { mutate: sendRequestMutation, isPending } = useMutation({
     mutationFn: sendFriendRequest,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["outgoingFriendReqs"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["outgoingFriendReqs"] }),
   });
 
   useEffect(() => {
@@ -112,13 +115,12 @@ const recommendedUsers = data?.recommendedUsers || [];
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              
-              { recommendedUsers.map((user) => {
+              {recommendedUsers.map((user) => {
                 const hasRequestBeenSent = outgoingRequestsIds.has(user._id);
                 return (
                   <div
                     key={user._id}
-                    className="card bg-base-200 hover:shadow-lg transition-all duration-300"
+                    className="card bg-base-200 hover:shadow-lg transition-all duration-300  hover:scale-105"
                   >
                     <div className="card-body p-5 space-y-4">
                       <div className="flex items-center gap-3">
@@ -127,7 +129,9 @@ const recommendedUsers = data?.recommendedUsers || [];
                         </div>
 
                         <div>
-                          <h3 className="font-semibold text-lg">{user.fullName}</h3>
+                          <h3 className="font-semibold text-lg">
+                            {user.fullName}
+                          </h3>
                           {user.location && (
                             <div className="flex items-center text-xs opacity-70 mt-1">
                               <MapPinIcon className="size-3 mr-1" />
@@ -147,37 +151,38 @@ const recommendedUsers = data?.recommendedUsers || [];
                           {getLanguageFlag(user.learningLanguage)}
                           Learning : {capitalize(user.learningLanguage)}
                         </span>
-                    </div>
+                      </div>
 
-                    {user.bio && <p className="text-sm opacity-70">{user.bio}</p>}
-
-                    {/* Action Button */}
-                    <button className={`btn w-full mt-2 ${
-                      hasRequestBeenSent ? "btn-disabled" : "btn-primary"
-                    }`}
-                    onClick={()=>sendRequestMutation(user._id)}
-                    disabled={hasRequestBeenSent || isPending}
-                    >
-                      {hasRequestBeenSent ? (
-                        <>
-                        <CheckCircleIcon className="size-4 mr-2" />
-                        Request Sent
-                          </>
-                      ) : (
-                        <>
-                        <UserPlusIcon className="size-4 mr-2" />
-                        Send Friend Request
-                        </>
+                      {user.bio && (
+                        <p className="text-sm opacity-70">{user.bio}</p>
                       )}
-                    </button>
-                  </div>
+
+                      {/* Action Button */}
+                      <button
+                        className={`btn w-full mt-2 ${
+                          hasRequestBeenSent ? "btn-disabled" : "btn-primary"
+                        }`}
+                        onClick={() => sendRequestMutation(user._id)}
+                        disabled={hasRequestBeenSent || isPending}
+                      >
+                        {hasRequestBeenSent ? (
+                          <>
+                            <CheckCircleIcon className="size-4 mr-2" />
+                            Request Sent
+                          </>
+                        ) : (
+                          <>
+                            <UserPlusIcon className="size-4 mr-2" />
+                            Send Friend Request
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 );
               })}
             </div>
           )}
-
-  
         </section>
       </div>
     </div>
